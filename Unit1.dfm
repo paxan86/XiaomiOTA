@@ -3210,8 +3210,6 @@ object Form1: TForm1
     AutoSize = True
     BevelInner = bvLowered
     TabOrder = 2
-    ExplicitTop = 249
-    ExplicitWidth = 466
     object LabelStatus: TLabel
       Left = 10
       Top = 3

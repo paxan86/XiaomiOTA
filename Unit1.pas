@@ -40,6 +40,8 @@ type
     function IsZip (Generated_build: Integer): boolean;
   private
     { Private declarations }
+  protected
+    procedure MyMessage(var Msg: TMessage); message const_MYMESSAGE;
   public
     { Public declarations }
   end;
@@ -236,6 +238,20 @@ begin
     ListBoxLINKS.ItemIndex := ListBoxLINKS.ItemAtPos(Point(X, Y), False);
     Clipboard.AsText := Memo1.Lines[ListBoxLINKS.ItemIndex];
   end;
+end;
+
+procedure TForm1.MyMessage(var Msg: TMessage);
+var
+Platform_id, Device, My_build, Build_Date, Content_Length: String;
+begin
+//MessageDlg('She turned me into a newt!'+IntToStr(Msg.LParamLo),mtInformation, [mbOk], 0);
+platform_id := form1.SpinEditPlatform_ID.Text;
+  Device := form1.ComboBoxDevice.Items[form1.ComboBoxDevice.ItemIndex];
+  My_build := form1.SpinEditMy_Build.Text;;
+  form1.Memo1.Lines.Append(Format('%s%s%s%s%s%s%s%s%s%s%s%s%s', ['http://ota.cdn.pandora.xiaomi.com/rom/', Platform_id, '/', Device, '/user/6.0.1.', IntToStr(Msg.LParam), '/6.0.1.', My_build, '/package-6.0.1.', My_build, '-6.0.1.', IntToStr(Msg.LParam), '.zip']));
+  //form1.ListBoxLINKS.Items.Add(Format('%s%s%s%s%s%s%s%s', ['package-6.0.1.', My_build, '-6.0.1.', IntToStr(Msg.LParam), '.zip ', Content_Length, 'Ã¡ Œ“ ', build_date]));
+  form1.ListBoxLINKS.Items.Add(Format('%s%s%s%s%s', ['package-6.0.1.', My_build, '-6.0.1.', IntToStr(Msg.LParam), '.zip ']));
+//form1.ListBoxLINKS.Items.Append(IntToStr(Msg.LParam));
 end;
 
 end.
