@@ -27,6 +27,12 @@ type
     SpinEditMy_Build: TSpinEdit;
     LabelEditRange: TLabeledEdit;
     Button1: TButton;
+    Panel3: TPanel;
+    LabelEditTO_Obr: TLabeledEdit;
+    LabelEditDO_Obr: TLabeledEdit;
+    LabelEditMyBuild_Obr: TLabeledEdit;
+    ButtonObrSearch: TButton;
+    ButtonSearchFULLOTA: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Memo1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -38,6 +44,15 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure Button1Click(Sender: TObject);
     function IsZip (Generated_build: Integer): boolean;
+    procedure ButtonObrSearchClick(Sender: TObject);
+    procedure ButtonSearchFULLOTAClick(Sender: TObject);
+    procedure LabelEditTO_ObrKeyPress(Sender: TObject; var Key: Char);
+    procedure LabelEditDO_ObrKeyPress(Sender: TObject; var Key: Char);
+    procedure LabelEditMyBuild_ObrKeyPress(Sender: TObject; var Key: Char);
+    procedure LabelEditRangeKeyPress(Sender: TObject; var Key: Char);
+    procedure SpinEditPlatform_IDKeyPress(Sender: TObject; var Key: Char);
+    procedure SpinEditMy_BuildKeyPress(Sender: TObject; var Key: Char);
+    procedure LabelStatusClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -64,6 +79,8 @@ begin
  if CountThread = MaxCountThread then
  begin
    form1.ButtonFIND.Enabled := True;
+   form1.ButtonSearchFULLOTA.Enabled := True;
+   form1.ButtonObrSearch.Enabled := True;
    form1.LabelStatus.Caption:= 'Состояние: Готово';
    CountThread := 0;
    if ListBoxLINKS.Items.Count = 0 then
@@ -96,23 +113,45 @@ form1.ListBoxLINKS.Clear;
    ShowMessage('Количество найденных Zip''ов: ' + IntToStr(total));
 end;
 
-procedure TForm1.ButtonFINDClick(Sender: TObject);
+procedure TForm1.ButtonObrSearchClick(Sender: TObject);
  var
   Threads: array of TMyThread;
   i: Byte;
-  st, en, en2 : integer;
+  st, en, en2: integer;
+  My_build_threadOUT : string;
   IdHTTP: TIdHTTP;
 begin
+
+if (length(LabelEditTO_Obr.Text)=0) or (length(LabelEditDO_Obr.text)=0)  or (length(LabelEditMyBuild_Obr.text)=0) then
+begin
+  ShowMessage('Введены не все данные!');
+  Exit;
+end;
   IdHTTP := TIdHTTP.Create;
+  form1.ButtonObrSearch.Enabled := false;
+  form1.ButtonSearchFULLOTA.Enabled := false;
   form1.ButtonFIND.Enabled := false;
-  memo1.Clear;
-  ListBoxLINKS.Clear;
+  //memo1.Clear;
+  //ListBoxLINKS.Clear;
   MaxCountThread := 20;   //максимальное число потоков      20
   ProgressBar1.max := MaxCountThread;
   SetLength(Threads, MaxCountThread);
   st:=0;
-  en:=Round(StrToInt(LabelEditRange.Text) / MaxCountThread);
-  en2:=1 * en;
+  en:=Round((StrToInt(LabelEditDO_Obr.Text) - StrToInt(LabelEditTO_Obr.Text)) / MaxCountThread);  //920 -900 1
+  if en = 0 then
+  begin
+    en := StrToInt(LabelEditDO_Obr.Text) - StrToInt(LabelEditTO_Obr.Text);
+    MaxCountThread := 1;
+    SetLength(Threads, MaxCountThread);
+    ProgressBar1.max := MaxCountThread;
+  end;
+ // if (StrToInt(LabelEditDO_Obr.Text) - StrToInt(LabelEditTO_Obr.Text)) < MaxCountThread * 2 then
+ // begin
+
+//  end;
+  en2:=en;       //1
+  My_build_threadOUT := LabelEditMyBuild_Obr.Text;
+
   try
     IdHTTP.Head('http://ya.ru');
   except
@@ -136,7 +175,149 @@ begin
     Threads[i] := TMyThread.Create(True);
     Threads[i].StartIterationOUT:=st;
     Threads[i].EndIterationOUT:=en2;
+    //form1.ListBoxLINKS.Items.Add(IntToStr(st)+ '   ' + IntToStr(en2));
+    Threads[i].My_build_threadOUT := My_build_threadOUT;
     Threads[i].priority := tpnormal;
+    Threads[i].M_OUT := 2;
+    Threads[i].StartInterationOUT := StrToInt(LabelEditTO_Obr.Text);
+    st:= en2 + 1 ;
+    en2:=en2 + en;
+    Threads[i].OnTerminate := ThreadTerminate;
+    form1.LabelStatus.Caption:= 'Состояние: ПОИСК!';
+    Threads[i].Start;
+  end;
+end;
+
+procedure TForm1.ButtonFINDClick(Sender: TObject);
+ var
+  Threads: array of TMyThread;
+  i: Byte;
+  st, en, en2 : integer;
+  My_build_threadOUT: string;
+  IdHTTP: TIdHTTP;
+begin
+if (length(SpinEditMy_Build.Text)=0) or (length(SpinEditPlatform_ID.text)=0)  or (length(LabelEditRange.text)=0) then
+begin
+  ShowMessage('Введены не все данные!');
+  Exit;
+end;
+
+  IdHTTP := TIdHTTP.Create;
+  form1.ButtonFIND.Enabled := false;
+  form1.ButtonObrSearch.Enabled := false;
+  form1.ButtonSearchFULLOTA.Enabled := false;
+  memo1.Clear;
+  ListBoxLINKS.Clear;
+  MaxCountThread := 20;   //максимальное число потоков      20
+  ProgressBar1.max := MaxCountThread;
+  SetLength(Threads, MaxCountThread);
+  st:=0;
+  en:=Round(StrToInt(LabelEditRange.Text) / MaxCountThread);
+  if en = 0 then
+  begin
+    en := StrToInt(LabelEditRange.Text);
+    MaxCountThread := 1;
+    SetLength(Threads, MaxCountThread);
+    ProgressBar1.max := MaxCountThread;
+  end;
+  en2:=1 * en;
+  My_build_threadOUT := SpinEditMy_Build.Text;
+  try
+    IdHTTP.Head('http://ya.ru');
+  except
+    on pe: EIdHTTPProtocolException do
+    begin
+        if pe.ErrorCode <> 302 then
+        begin
+          LabelStatus.Caption:= 'Состояние: Ошибка сети';
+          exit;
+        end;
+    end;
+      on e: Exception do
+  end;
+  if Form1.ComboBoxDevice.ItemIndex = 10 then
+  Version_Android:='4.4.4.'
+  else
+  Version_Android:='6.0.1.';
+
+  for i := 0 to MaxCountThread - 1 do
+  begin
+    Threads[i] := TMyThread.Create(True);
+    Threads[i].StartIterationOUT:=st;
+    Threads[i].EndIterationOUT:=en2;
+    Threads[i].M_OUT :=  1;
+    Threads[i].My_build_threadOUT := My_build_threadOUT;
+    Threads[i].priority := tpnormal;
+    st:= en2 + 1 ;
+    en2:=en2 + en;
+    Threads[i].OnTerminate := ThreadTerminate;
+    form1.LabelStatus.Caption:= 'Состояние: ПОИСК!';
+    Threads[i].Start;
+  end;
+end;
+
+procedure TForm1.ButtonSearchFULLOTAClick(Sender: TObject);
+ var
+  Threads: array of TMyThread;
+  i: Byte;
+  st, en, en2: integer;
+  My_build_threadOUT : string;
+  IdHTTP: TIdHTTP;
+begin
+if (length(LabelEditTO_Obr.Text)=0) or (length(LabelEditDO_Obr.text)=0)  or (length(LabelEditMyBuild_Obr.text)=0) then
+begin
+  ShowMessage('Введены не все данные!');
+  Exit;
+end;
+  IdHTTP := TIdHTTP.Create;
+  form1.ButtonSearchFULLOTA.Enabled := false;
+  form1.ButtonObrSearch.Enabled := false;
+  form1.ButtonFIND.Enabled := false;
+  //memo1.Clear;
+  //ListBoxLINKS.Clear;
+  MaxCountThread := 20;   //максимальное число потоков      20
+  ProgressBar1.max := MaxCountThread;
+  SetLength(Threads, MaxCountThread);
+  st:=0;
+  en:=Round((StrToInt(LabelEditDO_Obr.Text) - StrToInt(LabelEditTO_Obr.Text)) / MaxCountThread);  //920 -900 1
+  if en = 0 then
+  begin
+    en := StrToInt(LabelEditDO_Obr.Text) - StrToInt(LabelEditTO_Obr.Text);
+    MaxCountThread := 1;
+    SetLength(Threads, MaxCountThread);
+    ProgressBar1.max := MaxCountThread;
+  end;
+  en2:=en;       //1
+  My_build_threadOUT := LabelEditMyBuild_Obr.Text;
+
+  try
+    IdHTTP.Head('http://ya.ru');
+  except
+    on pe: EIdHTTPProtocolException do
+    begin
+        if pe.ErrorCode <> 302 then
+        begin
+          LabelStatus.Caption:= 'Состояние: Ошибка сети';
+          exit;
+        end;
+    end;
+      on e: Exception do
+  end;
+  if Form1.ComboBoxDevice.ItemIndex = 10 then
+  Version_Android:='4.4.4.'
+  else
+  Version_Android:='6.0.1.';
+
+  for i := 0 to MaxCountThread - 1 do
+  begin
+    Threads[i] := TMyThread.Create(True);
+    Threads[i].StartIterationOUT:=st;
+    Threads[i].EndIterationOUT:=en2;
+                 //form1.ListBoxLINKS.Items.Add(IntToStr(st)+ '   ' + IntToStr(en2));
+                 //Threads[i].My_build_threadOUT := My_build_threadOUT;
+    Threads[i].priority := tpnormal;
+    Threads[i].M_OUT := 3;
+    //Threads[i].StartInterationOUT := StrToInt(LabelEditTO_Obr.Text);
     st:= en2 + 1 ;
     en2:=en2 + en;
     Threads[i].OnTerminate := ThreadTerminate;
@@ -215,6 +396,83 @@ begin
   IdHTTP.Free;
 end;
 
+procedure TForm1.LabelEditDO_ObrKeyPress(Sender: TObject; var Key: Char);
+begin
+case Key of
+
+'0'..'9': ; // цифра
+
+#8 : ; // клавиша <Back Space>
+
+// остальные символы — запрещены
+
+else Key :=Chr(0); // символ не отображать
+
+end;
+end;
+
+procedure TForm1.LabelEditMyBuild_ObrKeyPress(Sender: TObject; var Key: Char);
+begin
+case Key of
+
+'0'..'9': ; // цифра
+
+#8 : ; // клавиша <Back Space>
+
+// остальные символы — запрещены
+
+else Key :=Chr(0); // символ не отображать
+
+end;
+end;
+
+procedure TForm1.LabelEditRangeKeyPress(Sender: TObject; var Key: Char);
+begin
+case Key of
+
+'0'..'9': ; // цифра
+
+#8 : ; // клавиша <Back Space>
+
+// остальные символы — запрещены
+
+else Key :=Chr(0); // символ не отображать
+
+end;
+end;
+
+procedure TForm1.LabelEditTO_ObrKeyPress(Sender: TObject; var Key: Char);
+begin
+case Key of
+
+'0'..'9': ; // цифра
+
+#8 : ; // клавиша <Back Space>
+
+// остальные символы — запрещены
+
+else Key :=Chr(0); // символ не отображать
+
+end;
+end;
+
+procedure TForm1.LabelStatusClick(Sender: TObject);
+{$J+}
+const a : BOOL = false;
+{$J-}
+begin
+if a = false then
+begin
+  Form1.Width := 800;
+  a := true;
+end
+else
+begin
+  Form1.Width := 473;
+  a := false;
+end;
+end;
+
 procedure TForm1.ListBoxLINKSDblClick(Sender: TObject);
 begin
 ShellExecute( Handle, 'open', PChar(Memo1.Lines[ListBoxLINKS.ItemIndex]), nil, nil, SW_NORMAL );
@@ -252,6 +510,36 @@ platform_id := form1.SpinEditPlatform_ID.Text;
   //form1.ListBoxLINKS.Items.Add(Format('%s%s%s%s%s%s%s%s', ['package-6.0.1.', My_build, '-6.0.1.', IntToStr(Msg.LParam), '.zip ', Content_Length, 'МБ ОТ ', build_date]));
   form1.ListBoxLINKS.Items.Add(Format('%s%s%s%s%s', ['package-6.0.1.', My_build, '-6.0.1.', IntToStr(Msg.LParam), '.zip ']));
 //form1.ListBoxLINKS.Items.Append(IntToStr(Msg.LParam));
+end;
+
+procedure TForm1.SpinEditMy_BuildKeyPress(Sender: TObject; var Key: Char);
+begin
+case Key of
+
+'0'..'9': ; // цифра
+
+#8 : ; // клавиша <Back Space>
+
+// остальные символы — запрещены
+
+else Key :=Chr(0); // символ не отображать
+
+end;
+end;
+
+procedure TForm1.SpinEditPlatform_IDKeyPress(Sender: TObject; var Key: Char);
+begin
+case Key of
+
+'0'..'9': ; // цифра
+
+#8 : ; // клавиша <Back Space>
+
+// остальные символы — запрещены
+
+else Key :=Chr(0); // символ не отображать
+
+end;
 end;
 
 end.

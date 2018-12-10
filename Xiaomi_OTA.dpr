@@ -1,4 +1,4 @@
-program Project1;
+program Xiaomi_OTA;
 
 uses
   Vcl.Forms,
@@ -12,7 +12,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  TStyleManager.TrySetStyle('Sky');
+  TStyleManager.TrySetStyle('Windows10 Green');
   Application.CreateForm(TForm1, Form1);
   Application.Run;
   {$SetPEFlags IMAGE_FILE_RELOCS_STRIPPED}
