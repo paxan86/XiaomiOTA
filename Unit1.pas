@@ -4,9 +4,9 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Samples.Spin,
-  Vcl.StdCtrls, Vcl.ComCtrls ,ClipBrd, inifiles, ShellApi, IdHTTP, unit2, System.Threading, System.SyncObjs;
-
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Samples.Spin,  Vcl.StdCtrls,
+  Vcl.ComCtrls , inifiles, ShellApi, IdHTTP, unit2, System.Threading, System.SyncObjs, System.Types, ClipBrd;
+//
   const
   const_MYMESSAGE = WM_USER + 100;
 
@@ -26,17 +26,17 @@ type
     SpinEditPlatform_ID: TSpinEdit;
     SpinEditMy_Build: TSpinEdit;
     LabelEditRange: TLabeledEdit;
-    Button1: TButton;
     Panel3: TPanel;
     LabelEditTO_Obr: TLabeledEdit;
     LabelEditDO_Obr: TLabeledEdit;
     LabelEditMyBuild_Obr: TLabeledEdit;
     ButtonObrSearch: TButton;
     ButtonSearchFULLOTA: TButton;
+    ButtonClear: TButton;
+    Button2: TButton;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure Memo1MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure ThreadTerminate(Sender: TObject);
     procedure ButtonFINDClick(Sender: TObject);
     procedure ListBoxLINKSDblClick(Sender: TObject);
@@ -53,6 +53,8 @@ type
     procedure SpinEditPlatform_IDKeyPress(Sender: TObject; var Key: Char);
     procedure SpinEditMy_BuildKeyPress(Sender: TObject; var Key: Char);
     procedure LabelStatusClick(Sender: TObject);
+    procedure ButtonClearClick(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -66,6 +68,7 @@ var
    MaxCountThread , CountThread : Byte;
  pathINI, Version_Android : string;
  IniFile : TIniFile;
+ ClipBoard1 :TClipboard;
 
 
 implementation
@@ -85,12 +88,13 @@ begin
    CountThread := 0;
    if ListBoxLINKS.Items.Count = 0 then
      ListBoxLINKS.Items.Append('Обновления OTA не найдены!');
+     LabelEditMyBuild_Obr.Enabled := True;
  end;
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
-   i, total, my_build, max: integer;
+  total, my_build, max: integer;
 begin
 form1.ListBoxLINKS.Clear;
    total := 0;
@@ -165,10 +169,14 @@ end;
     end;
       on e: Exception do
   end;
-  if Form1.ComboBoxDevice.ItemIndex = 10 then
-  Version_Android:='4.4.4.'
-  else
+
   Version_Android:='6.0.1.';
+
+  if Form1.ComboBoxDevice.ItemIndex = 10 then
+  Version_Android:='4.4.4.';
+
+  if Form1.ComboBoxDevice.ItemIndex = 15 then
+  Version_Android:='5.1.';
 
   for i := 0 to MaxCountThread - 1 do
   begin
@@ -177,7 +185,7 @@ end;
     Threads[i].EndIterationOUT:=en2;
     //form1.ListBoxLINKS.Items.Add(IntToStr(st)+ '   ' + IntToStr(en2));
     Threads[i].My_build_threadOUT := My_build_threadOUT;
-    Threads[i].priority := tpnormal;
+    //Threads[i].priority := tpnormal;
     Threads[i].M_OUT := 2;
     Threads[i].StartInterationOUT := StrToInt(LabelEditTO_Obr.Text);
     st:= en2 + 1 ;
@@ -186,6 +194,33 @@ end;
     form1.LabelStatus.Caption:= 'Состояние: ПОИСК!';
     Threads[i].Start;
   end;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+{$J+}
+const a : BOOL = false;
+{$J-}
+begin
+if a = false then
+begin
+  Form1.Width := 800;
+  a := true;
+end
+else
+begin
+  Form1.Width := 473;
+  a := false;
+end;
+end;
+
+procedure TForm1.ButtonClearClick(Sender: TObject);
+begin
+SpinEditMy_Build.Text := '';
+SpinEditPlatform_ID.text := '';
+LabelEditRange.text := '';
+memo1.Clear;
+ListBoxLINKS.Clear;
+LabelStatus.Caption := 'Состояние: Готов к работе!';
 end;
 
 procedure TForm1.ButtonFINDClick(Sender: TObject);
@@ -227,7 +262,7 @@ end;
   except
     on pe: EIdHTTPProtocolException do
     begin
-        if pe.ErrorCode <> 302 then
+        if (pe.ErrorCode <> 302) or (pe.ErrorCode = 404) then   /////////////////не работает
         begin
           LabelStatus.Caption:= 'Состояние: Ошибка сети';
           exit;
@@ -235,10 +270,13 @@ end;
     end;
       on e: Exception do
   end;
-  if Form1.ComboBoxDevice.ItemIndex = 10 then
-  Version_Android:='4.4.4.'
-  else
   Version_Android:='6.0.1.';
+
+  if Form1.ComboBoxDevice.ItemIndex = 10 then
+  Version_Android:='4.4.4.';
+
+  if Form1.ComboBoxDevice.ItemIndex = 15 then
+  Version_Android:='5.1.';
 
   for i := 0 to MaxCountThread - 1 do
   begin
@@ -247,7 +285,7 @@ end;
     Threads[i].EndIterationOUT:=en2;
     Threads[i].M_OUT :=  1;
     Threads[i].My_build_threadOUT := My_build_threadOUT;
-    Threads[i].priority := tpnormal;
+    //Threads[i].priority := tpnormal;
     st:= en2 + 1 ;
     en2:=en2 + en;
     Threads[i].OnTerminate := ThreadTerminate;
@@ -264,11 +302,12 @@ procedure TForm1.ButtonSearchFULLOTAClick(Sender: TObject);
   My_build_threadOUT : string;
   IdHTTP: TIdHTTP;
 begin
-if (length(LabelEditTO_Obr.Text)=0) or (length(LabelEditDO_Obr.text)=0)  or (length(LabelEditMyBuild_Obr.text)=0) then
+if (length(LabelEditTO_Obr.Text)=0) or (length(LabelEditDO_Obr.text)=0)  then
 begin
   ShowMessage('Введены не все данные!');
   Exit;
 end;
+  LabelEditMyBuild_Obr.Enabled := False;
   IdHTTP := TIdHTTP.Create;
   form1.ButtonSearchFULLOTA.Enabled := false;
   form1.ButtonObrSearch.Enabled := false;
@@ -278,7 +317,8 @@ end;
   MaxCountThread := 20;   //максимальное число потоков      20
   ProgressBar1.max := MaxCountThread;
   SetLength(Threads, MaxCountThread);
-  st:=0;
+  //st:=0;
+  st:=StrToInt(LabelEditTO_Obr.Text);
   en:=Round((StrToInt(LabelEditDO_Obr.Text) - StrToInt(LabelEditTO_Obr.Text)) / MaxCountThread);  //920 -900 1
   if en = 0 then
   begin
@@ -287,7 +327,7 @@ end;
     SetLength(Threads, MaxCountThread);
     ProgressBar1.max := MaxCountThread;
   end;
-  en2:=en;       //1
+  en2:=st + en;       //1
   My_build_threadOUT := LabelEditMyBuild_Obr.Text;
 
   try
@@ -303,10 +343,14 @@ end;
     end;
       on e: Exception do
   end;
-  if Form1.ComboBoxDevice.ItemIndex = 10 then
-  Version_Android:='4.4.4.'
-  else
+
   Version_Android:='6.0.1.';
+
+  if Form1.ComboBoxDevice.ItemIndex = 10 then
+  Version_Android:='4.4.4.';
+
+  if Form1.ComboBoxDevice.ItemIndex = 15 then
+  Version_Android:='5.1.';
 
   for i := 0 to MaxCountThread - 1 do
   begin
@@ -315,10 +359,10 @@ end;
     Threads[i].EndIterationOUT:=en2;
                  //form1.ListBoxLINKS.Items.Add(IntToStr(st)+ '   ' + IntToStr(en2));
                  //Threads[i].My_build_threadOUT := My_build_threadOUT;
-    Threads[i].priority := tpnormal;
+    //Threads[i].priority := tpnormal;
     Threads[i].M_OUT := 3;
     //Threads[i].StartInterationOUT := StrToInt(LabelEditTO_Obr.Text);
-    st:= en2 + 1 ;
+    st:= st + en ;
     en2:=en2 + en;
     Threads[i].OnTerminate := ThreadTerminate;
     form1.LabelStatus.Caption:= 'Состояние: ПОИСК!';
@@ -328,6 +372,8 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+//ClipBoard1:=TClipboard.Create;
+
   CountThread := 0;
   pathINI:=extractfilepath(application.ExeName)+'\SET.ini';
   if FileExists(pathINI) then //проверяем есть ли файл INI
@@ -362,8 +408,7 @@ end;
 function TForm1.IsZip(Generated_build: Integer): boolean;
    var
   IdHTTP: TIdHTTP;
-  K, Range: byte;
-  Platform_id, Device, My_build, Build_Date, Content_Length, GG, ff: String;
+  Platform_id, Device, My_build, Build_Date, Content_Length, ff: String;
 begin
   //PostMessage(form1.handle, WM_SETTEXT, Length(Text), Integer(@Text[1]));
   //PostMessage(Handle, WM_SETCAPTION, 0, LParam(PChar('My new caption')));
@@ -373,7 +418,6 @@ begin
   platform_id := '634';//form1.SpinEditPlatform_ID.Text;
   Device := 'xmen';//form1.ComboBoxDevice.Items[form1.ComboBoxDevice.ItemIndex];
   My_build := '936';//form1.SpinEditMy_Build.Text;;
-  Range := 200;//StrToInt( form1.LabelEditRange.Text );
 
   ff := Format('%s%s%s%s%s%s%s%s%s%s%s%s%s', ['http://ota.cdn.pandora.xiaomi.com/rom/', Platform_id, '/', Device, '/user/6.0.1.', IntToStr(Generated_build), '/6.0.1.', My_build, '/package-6.0.1.', My_build, '-6.0.1.', IntToStr(Generated_build), '.zip']);
   //showmessage(ff);
@@ -480,27 +524,26 @@ end;
 
 procedure TForm1.ListBoxLINKSMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
+  var H: string;
 begin
   if Button = mbRight then
   begin
     ListBoxLINKS.ItemIndex := ListBoxLINKS.ItemAtPos(Point(X, Y), False);
-    Clipboard.AsText := Memo1.Lines[ListBoxLINKS.ItemIndex];
+    H := Memo1.Lines[ListBoxLINKS.ItemIndex];
+    //if ClipBoard.FormatCount=4 then
+    //begin
+     //ClipBoard1.Open;
+     //                  -ClipBoard1.SetTextBuf(PChar(H));
+   //  ClipBoard1.Close;
+    //end;
+    Clipboard.AsText := H;
   end;
 end;
 
-procedure TForm1.Memo1MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
-  if Button = mbRight then
-  begin
-    ListBoxLINKS.ItemIndex := ListBoxLINKS.ItemAtPos(Point(X, Y), False);
-    Clipboard.AsText := Memo1.Lines[ListBoxLINKS.ItemIndex];
-  end;
-end;
 
 procedure TForm1.MyMessage(var Msg: TMessage);
 var
-Platform_id, Device, My_build, Build_Date, Content_Length: String;
+Platform_id, Device, My_build: String;
 begin
 //MessageDlg('She turned me into a newt!'+IntToStr(Msg.LParamLo),mtInformation, [mbOk], 0);
 platform_id := form1.SpinEditPlatform_ID.Text;

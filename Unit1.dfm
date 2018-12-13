@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'XiaomiOTA by PaXaN86 v3.0 BETA'
-  ClientHeight = 366
+  Caption = 'XiaomiOTA by PaXaN86 v3.3 BETA'
+  ClientHeight = 316
   ClientWidth = 467
   Color = clBtnFace
   DoubleBuffered = True
@@ -3186,38 +3186,38 @@ object Form1: TForm1
     Width = 328
     Height = 246
     ItemHeight = 13
+    Sorted = True
     TabOrder = 0
     OnDblClick = ListBoxLINKSDblClick
     OnMouseDown = ListBoxLINKSMouseDown
   end
   object Memo1: TMemo
     Left = 503
-    Top = 12
+    Top = 5
     Width = 266
     Height = 327
     ScrollBars = ssBoth
     TabOrder = 1
     WordWrap = False
-    OnMouseDown = Memo1MouseDown
   end
   object Panel1: TPanel
     Left = 0
-    Top = 345
+    Top = 295
     Width = 467
     Height = 21
     Align = alBottom
     AutoSize = True
     BevelInner = bvLowered
     TabOrder = 2
-    ExplicitTop = 441
-    ExplicitWidth = 938
     object LabelStatus: TLabel
-      Left = 10
-      Top = 3
-      Width = 139
+      Left = 2
+      Top = 6
+      Width = 463
       Height = 13
+      Align = alBottom
       Caption = #1057#1086#1089#1090#1086#1103#1085#1080#1077': '#1043#1086#1090#1086#1074' '#1082' '#1088#1072#1073#1086#1090#1077
       OnClick = LabelStatusClick
+      ExplicitWidth = 139
     end
     object ProgressBar1: TProgressBar
       Left = 315
@@ -3344,25 +3344,16 @@ object Form1: TForm1
       OnKeyPress = LabelEditRangeKeyPress
     end
   end
-  object Button1: TButton
-    Left = 503
-    Top = 368
-    Width = 75
-    Height = 25
-    Caption = 'PPL'
-    TabOrder = 4
-    OnClick = Button1Click
-  end
   object Panel3: TPanel
     Left = 0
     Top = 256
     Width = 465
-    Height = 89
-    TabOrder = 5
+    Height = 41
+    TabOrder = 4
     object LabelEditTO_Obr: TLabeledEdit
       Left = 10
       Top = 16
-      Width = 121
+      Width = 32
       Height = 21
       EditLabel.Width = 11
       EditLabel.Height = 13
@@ -3371,9 +3362,9 @@ object Form1: TForm1
       OnKeyPress = LabelEditTO_ObrKeyPress
     end
     object LabelEditDO_Obr: TLabeledEdit
-      Left = 160
+      Left = 50
       Top = 16
-      Width = 121
+      Width = 33
       Height = 21
       EditLabel.Width = 19
       EditLabel.Height = 13
@@ -3382,9 +3373,9 @@ object Form1: TForm1
       OnKeyPress = LabelEditDO_ObrKeyPress
     end
     object LabelEditMyBuild_Obr: TLabeledEdit
-      Left = 315
+      Left = 99
       Top = 16
-      Width = 121
+      Width = 38
       Height = 21
       EditLabel.Width = 76
       EditLabel.Height = 13
@@ -3393,8 +3384,8 @@ object Form1: TForm1
       OnKeyPress = LabelEditMyBuild_ObrKeyPress
     end
     object ButtonObrSearch: TButton
-      Left = 89
-      Top = 56
+      Left = 181
+      Top = 10
       Width = 97
       Height = 25
       Caption = #1054#1073#1088#1072#1090#1085#1099#1081' '#1087#1086#1080#1089#1082
@@ -3402,13 +3393,41 @@ object Form1: TForm1
       OnClick = ButtonObrSearchClick
     end
     object ButtonSearchFULLOTA: TButton
-      Left = 264
-      Top = 56
+      Left = 284
+      Top = 10
       Width = 97
       Height = 25
       Caption = #1055#1086#1080#1089#1082' '#1074#1089#1077#1093' OTA'
       TabOrder = 4
       OnClick = ButtonSearchFULLOTAClick
     end
+    object ButtonClear: TButton
+      Left = 387
+      Top = 9
+      Width = 38
+      Height = 25
+      Caption = #1057#1073#1088#1086#1089
+      TabOrder = 5
+      OnClick = ButtonClearClick
+    end
+    object Button2: TButton
+      Left = 434
+      Top = 8
+      Width = 18
+      Height = 27
+      Caption = '>>'
+      TabOrder = 6
+      OnClick = Button2Click
+    end
+  end
+  object Button1: TButton
+    Left = 458
+    Top = 255
+    Width = 75
+    Height = 25
+    Caption = 'PPL'
+    TabOrder = 5
+    Visible = False
+    OnClick = Button1Click
   end
 end
