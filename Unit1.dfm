@@ -3263,7 +3263,6 @@ object Form1: TForm1
       Top = 133
       Width = 121
       Height = 21
-      ItemIndex = 29
       TabOrder = 0
       Text = 'xmen'
       Items.Strings = (
@@ -3298,7 +3297,8 @@ object Form1: TForm1
         'transformers'
         'xmen'
         'bennet'
-        'vforvendetta')
+        'vforvendetta'
+        'dangal')
     end
     object ButtonFIND: TButton
       Left = 6

@@ -351,6 +351,12 @@ end;
 
   if Form1.ComboBoxDevice.ItemIndex = 15 then
   Version_Android:='5.1.';
+  if Form1.ComboBoxDevice.ItemIndex = 32 then
+  begin
+  showmessage('1');
+  Version_Android:='8.1.';
+  end;
+
 
   for i := 0 to MaxCountThread - 1 do
   begin
