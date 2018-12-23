@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Samples.Spin,  Vcl.StdCtrls,
-  Vcl.ComCtrls , inifiles, ShellApi, IdHTTP, unit2, System.Threading, System.SyncObjs, System.Types, ClipBrd;
+  Vcl.ComCtrls , inifiles, ShellApi, IdHTTP, unit2, System.Threading, System.SyncObjs,
+  System.Types, ClipBrd;
 //
   const
   const_MYMESSAGE = WM_USER + 100;
@@ -65,17 +66,83 @@ type
 
 var
   Form1: TForm1;
-   MaxCountThread , CountThread : Byte;
+   MaxCountThread , CountThread, Mode : Byte;
  pathINI, Version_Android : string;
  IniFile : TIniFile;
  ClipBoard1 :TClipboard;
-
 
 implementation
 
 {$R *.dfm}
 
+
+
+procedure qSort(var A: Array of Integer; min, max: Integer);
+var i, j, supp, tmp : Integer;
+tmp2, tmp3 : string;
+begin
+supp:=A[max-((max-min) div 2)];
+//supp2 :=  form1.ListBoxLINKS.Items[max-((max-min) div 2)];
+i:=min; j:=max;
+while i<j do
+  begin
+    while A[i]<supp do i:=i+1;
+    while A[j]>supp do j:=j-1;
+    if i<=j then
+      begin
+        tmp:=A[i];
+        tmp2:=form1.ListBoxLINKS.Items[i];
+        tmp3:=form1.Memo1.Lines[i];
+        A[i]:=A[j];
+        form1.ListBoxLINKS.Items[i]:=form1.ListBoxLINKS.Items[j];
+        form1.Memo1.Lines[i]:=form1.Memo1.Lines[j];
+        A[j]:=tmp;
+        form1.ListBoxLINKS.Items[j]:=tmp2;
+        form1.Memo1.Lines[j]:=tmp3;
+        i:=i+1;
+        j:=j-1;
+      end;
+  end;
+if min<j then qSort(A, min, j);
+if i<max then qSort(A, i, max);
+end;
+
+
+function SearchString(const FindStr, SourceString: string; Num: Integer):
+  Integer;
+var
+  FirstSym: PChar; //Ссылка на первый символ
+
+  function MyPos(const FindStr, SourceString: PChar; Num: Integer): PChar;
+  begin
+    Result := AnsiStrPos(SourceString, FindStr);
+      //Поиск вхождения подстроки в строку
+    if (Result = nil) then
+      Exit; //Подстрока не найдена
+    Inc(Result); //Смещаем указатель на следующий символ
+    if Num = 1 then
+      Exit; //Если нужно первое вхождение - заканчиваем
+    if num > 1 then
+      Result := MyPos(FindStr, Result, num - 1);
+    //Рекурсивный поиск следующего вхождения
+  end;
+
+begin
+  FirstSym := PChar(SourceString);
+  //Присваиваем адрес первого символа исходной строки
+  Result := MyPos(PChar(FindStr), PChar(SourceString), Num) - FirstSym;
+  //Номер позиции в строке
+  if Result < 0 then
+    Result := 0; //Возвращаем номер позиции
+end;
+
+
 procedure TForm1.ThreadTerminate(Sender: TObject);
+var
+  changed : BOOL;
+  k, n1, n2, n11, n22, nResult, nResult2, min, j, i, h  : Integer;
+  buf, StrF: string;
+  t: array of integer;
 begin
  Inc(countThread);
  ProgressBar1.Position := CountThread;
@@ -86,11 +153,39 @@ begin
    form1.ButtonObrSearch.Enabled := True;
    form1.LabelStatus.Caption:= 'Состояние: Готово';
    CountThread := 0;
+
+
+ //  ListBoxLINKS.Items.Append('1:' + IntToStr(n1) + '  2:' + IntToStr(n2) + '  3:' + nResult);
    if ListBoxLINKS.Items.Count = 0 then
      ListBoxLINKS.Items.Append('Обновления OTA не найдены!');
      LabelEditMyBuild_Obr.Enabled := True;
+
+   SetLength(t, ListBoxLINKS.Items.Count);
+   if (Mode = 1) or (Mode = 2) then
+       for h := 0 to ListBoxLINKS.Items.Count - 1 do
+         begin
+            StrF := '6.0.1.';
+            n1 := SearchString(StrF, ListBoxLINKS.Items[h], 2) + 6;
+            StrF := '.zip';
+            n2 := SearchString(StrF, ListBoxLINKS.Items[h], 1);
+            TryStrToInt(copy(ListBoxLINKS.Items[h], n1, n2 - n1), nResult);
+            t[h] := nResult;
+         end;
+
+   if Mode = 3 then
+     for h := 0 to ListBoxLINKS.Items.Count - 1 do
+         begin
+            StrF := '6.0.1.';
+            n1 := SearchString(StrF, ListBoxLINKS.Items[h], 1) + 6;
+            StrF := ' ';
+            n2 := SearchString(StrF, ListBoxLINKS.Items[h], 1);
+            TryStrToInt(copy(ListBoxLINKS.Items[h], n1, n2 - n1), nResult);
+            t[h] := nResult;
+         end;
+        qSort(t, 0, ListBoxLINKS.Items.Count - 1);
  end;
-end;
+ end;
+
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
@@ -125,7 +220,7 @@ procedure TForm1.ButtonObrSearchClick(Sender: TObject);
   My_build_threadOUT : string;
   IdHTTP: TIdHTTP;
 begin
-
+form1.ProgressBar1.Position := 0;
 if (length(LabelEditTO_Obr.Text)=0) or (length(LabelEditDO_Obr.text)=0)  or (length(LabelEditMyBuild_Obr.text)=0) then
 begin
   ShowMessage('Введены не все данные!');
@@ -177,7 +272,7 @@ end;
 
   if Form1.ComboBoxDevice.ItemIndex = 15 then
   Version_Android:='5.1.';
-
+  Mode := 2;
   for i := 0 to MaxCountThread - 1 do
   begin
     Threads[i] := TMyThread.Create(True);
@@ -215,12 +310,15 @@ end;
 
 procedure TForm1.ButtonClearClick(Sender: TObject);
 begin
-SpinEditMy_Build.Text := '';
-SpinEditPlatform_ID.text := '';
-LabelEditRange.text := '';
+//SpinEditMy_Build.Text := '';
+//SpinEditPlatform_ID.text := '';
+//LabelEditRange.text := '';
 memo1.Clear;
 ListBoxLINKS.Clear;
 LabelStatus.Caption := 'Состояние: Готов к работе!';
+ButtonFIND.Enabled := True;
+ButtonObrSearch.Enabled := True;
+ButtonSearchFULLOTA.Enabled := True;
 end;
 
 procedure TForm1.ButtonFINDClick(Sender: TObject);
@@ -231,6 +329,7 @@ procedure TForm1.ButtonFINDClick(Sender: TObject);
   My_build_threadOUT: string;
   IdHTTP: TIdHTTP;
 begin
+form1.ProgressBar1.Position := 0;
 if (length(SpinEditMy_Build.Text)=0) or (length(SpinEditPlatform_ID.text)=0)  or (length(LabelEditRange.text)=0) then
 begin
   ShowMessage('Введены не все данные!');
@@ -278,6 +377,7 @@ end;
   if Form1.ComboBoxDevice.ItemIndex = 15 then
   Version_Android:='5.1.';
 
+  Mode := 1;
   for i := 0 to MaxCountThread - 1 do
   begin
     Threads[i] := TMyThread.Create(True);
@@ -302,6 +402,9 @@ procedure TForm1.ButtonSearchFULLOTAClick(Sender: TObject);
   My_build_threadOUT : string;
   IdHTTP: TIdHTTP;
 begin
+memo1.Clear;
+ListBoxLINKS.Clear;
+form1.ProgressBar1.Position := 0;
 if (length(LabelEditTO_Obr.Text)=0) or (length(LabelEditDO_Obr.text)=0)  then
 begin
   ShowMessage('Введены не все данные!');
@@ -357,17 +460,13 @@ end;
   Version_Android:='8.1.';
   end;
 
-
+  Mode := 3;
   for i := 0 to MaxCountThread - 1 do
   begin
     Threads[i] := TMyThread.Create(True);
     Threads[i].StartIterationOUT:=st;
     Threads[i].EndIterationOUT:=en2;
-                 //form1.ListBoxLINKS.Items.Add(IntToStr(st)+ '   ' + IntToStr(en2));
-                 //Threads[i].My_build_threadOUT := My_build_threadOUT;
-    //Threads[i].priority := tpnormal;
     Threads[i].M_OUT := 3;
-    //Threads[i].StartInterationOUT := StrToInt(LabelEditTO_Obr.Text);
     st:= st + en ;
     en2:=en2 + en;
     Threads[i].OnTerminate := ThreadTerminate;
@@ -378,8 +477,6 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-//ClipBoard1:=TClipboard.Create;
-
   CountThread := 0;
   pathINI:=extractfilepath(application.ExeName)+'\SET.ini';
   if FileExists(pathINI) then //проверяем есть ли файл INI
@@ -426,7 +523,6 @@ begin
   My_build := '936';//form1.SpinEditMy_Build.Text;;
 
   ff := Format('%s%s%s%s%s%s%s%s%s%s%s%s%s', ['http://ota.cdn.pandora.xiaomi.com/rom/', Platform_id, '/', Device, '/user/6.0.1.', IntToStr(Generated_build), '/6.0.1.', My_build, '/package-6.0.1.', My_build, '-6.0.1.', IntToStr(Generated_build), '.zip']);
-  //showmessage(ff);
   try IdHTTP.Head(Format('%s%s%s%s%s%s%s%s%s%s%s%s%s', ['http://ota.cdn.pandora.xiaomi.com/rom/', Platform_id, '/', Device, '/user/6.0.1.', IntToStr(Generated_build), '/6.0.1.', My_build, '/package-6.0.1.', My_build, '-6.0.1.', IntToStr(Generated_build), '.zip']));
   except
    // on pe: EIdHTTPProtocolException do  Exit;//ShowMessage(pe.Message);//   //ShowMessage(IntToStr(pe.ErrorCode));

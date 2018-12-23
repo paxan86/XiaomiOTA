@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'XiaomiOTA by PaXaN86 v3.3 BETA'
+  Caption = 'XiaomiOTA by PaXaN86 v3.7 BETA'
   ClientHeight = 316
   ClientWidth = 467
   Color = clBtnFace
@@ -3186,7 +3186,6 @@ object Form1: TForm1
     Width = 328
     Height = 246
     ItemHeight = 13
-    Sorted = True
     TabOrder = 0
     OnDblClick = ListBoxLINKSDblClick
     OnMouseDown = ListBoxLINKSMouseDown
