@@ -139,9 +139,8 @@ end;
 
 procedure TForm1.ThreadTerminate(Sender: TObject);
 var
-  changed : BOOL;
-  k, n1, n2, n11, n22, nResult, nResult2, min, j, i, h  : Integer;
-  buf, StrF: string;
+  n1, n2, nResult, h  : Integer;
+  StrF: string;
   t: array of integer;
 begin
  Inc(countThread);
@@ -298,7 +297,7 @@ const a : BOOL = false;
 begin
 if a = false then
 begin
-  Form1.Width := 800;
+  Form1.Width := 760;
   a := true;
 end
 else
@@ -385,7 +384,7 @@ end;
     Threads[i].EndIterationOUT:=en2;
     Threads[i].M_OUT :=  1;
     Threads[i].My_build_threadOUT := My_build_threadOUT;
-    //Threads[i].priority := tpnormal;
+    Threads[i].priority := tpnormal;
     st:= en2 + 1 ;
     en2:=en2 + en;
     Threads[i].OnTerminate := ThreadTerminate;
@@ -415,8 +414,6 @@ end;
   form1.ButtonSearchFULLOTA.Enabled := false;
   form1.ButtonObrSearch.Enabled := false;
   form1.ButtonFIND.Enabled := false;
-  //memo1.Clear;
-  //ListBoxLINKS.Clear;
   MaxCountThread := 20;   //максимальное число потоков      20
   ProgressBar1.max := MaxCountThread;
   SetLength(Threads, MaxCountThread);
@@ -432,7 +429,6 @@ end;
   end;
   en2:=st + en;       //1
   My_build_threadOUT := LabelEditMyBuild_Obr.Text;
-
   try
     IdHTTP.Head('http://ya.ru');
   except
@@ -446,20 +442,16 @@ end;
     end;
       on e: Exception do
   end;
-
   Version_Android:='6.0.1.';
-
   if Form1.ComboBoxDevice.ItemIndex = 10 then
   Version_Android:='4.4.4.';
-
   if Form1.ComboBoxDevice.ItemIndex = 15 then
   Version_Android:='5.1.';
   if Form1.ComboBoxDevice.ItemIndex = 32 then
   begin
-  showmessage('1');
-  Version_Android:='8.1.';
+    showmessage('1');
+    Version_Android:='8.1.';
   end;
-
   Mode := 3;
   for i := 0 to MaxCountThread - 1 do
   begin
@@ -487,7 +479,6 @@ begin
      ComboBoxDevice.ItemIndex := ComboBoxDevice.Items.IndexOf(IniFile.readString('Param', 'Device', 'xmen'));
     if ComboBoxDevice.ItemIndex = -1 then //если в ини пусто в девайсе
        ComboBoxDevice.ItemIndex := 29;
-
      SpinEditPlatform_ID.Text := IniFile.readString('Param', 'Platform_ID', '634');
     IniFile.Free;
     form1.LabelStatus.Caption:= '—осто€ние: SET.ini подгружен!';
@@ -499,7 +490,6 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-    //создаем ссылку на объект INI
   IniFile := TIniFile.Create(pathINI);
   IniFile.WriteString('Param', 'My_Build', SpinEditMy_Build.Text);
   IniFile.WriteString('Param', 'Range', LabelEditRange.Text);
@@ -536,70 +526,47 @@ begin
     Content_Length := IntToStr(Round(idhttp.Response.ContentLength /1024 /1024));
     PostMessage(form1.Handle, const_MYMESSAGE, 0, Generated_build);
   end;
-  ///Synchronize(syn(Generated_build));
-//end;
-
   IdHTTP.Free;
 end;
 
 procedure TForm1.LabelEditDO_ObrKeyPress(Sender: TObject; var Key: Char);
 begin
-case Key of
-
-'0'..'9': ; // цифра
-
-#8 : ; // клавиша <Back Space>
-
-// остальные символы Ч запрещены
-
-else Key :=Chr(0); // символ не отображать
-
-end;
+  case Key of
+    '0'..'9': ; // цифра
+    #8 : ; // клавиша <Back Space>// остальные символы Ч запрещены
+  else
+    Key :=Chr(0); // символ не отображать
+  end;
 end;
 
 procedure TForm1.LabelEditMyBuild_ObrKeyPress(Sender: TObject; var Key: Char);
 begin
-case Key of
-
-'0'..'9': ; // цифра
-
-#8 : ; // клавиша <Back Space>
-
-// остальные символы Ч запрещены
-
-else Key :=Chr(0); // символ не отображать
-
-end;
+  case Key of
+    '0'..'9': ; // цифра
+    #8 : ; // клавиша <Back Space>// остальные символы Ч запрещены
+  else
+    Key :=Chr(0); // символ не отображать
+  end;
 end;
 
 procedure TForm1.LabelEditRangeKeyPress(Sender: TObject; var Key: Char);
 begin
-case Key of
-
-'0'..'9': ; // цифра
-
-#8 : ; // клавиша <Back Space>
-
-// остальные символы Ч запрещены
-
-else Key :=Chr(0); // символ не отображать
-
-end;
+  case Key of
+    '0'..'9': ; // цифра
+    #8 : ; // клавиша <Back Space>// остальные символы Ч запрещены
+  else
+    Key :=Chr(0); // символ не отображать
+  end;
 end;
 
 procedure TForm1.LabelEditTO_ObrKeyPress(Sender: TObject; var Key: Char);
 begin
-case Key of
-
-'0'..'9': ; // цифра
-
-#8 : ; // клавиша <Back Space>
-
-// остальные символы Ч запрещены
-
-else Key :=Chr(0); // символ не отображать
-
-end;
+  case Key of
+    '0'..'9': ; // цифра
+    #8 : ; // клавиша <Back Space>// остальные символы Ч запрещены
+  else
+    Key :=Chr(0); // символ не отображать
+  end;
 end;
 
 procedure TForm1.LabelStatusClick(Sender: TObject);
@@ -632,12 +599,6 @@ begin
   begin
     ListBoxLINKS.ItemIndex := ListBoxLINKS.ItemAtPos(Point(X, Y), False);
     H := Memo1.Lines[ListBoxLINKS.ItemIndex];
-    //if ClipBoard.FormatCount=4 then
-    //begin
-     //ClipBoard1.Open;
-     //                  -ClipBoard1.SetTextBuf(PChar(H));
-   //  ClipBoard1.Close;
-    //end;
     Clipboard.AsText := H;
   end;
 end;
@@ -659,32 +620,23 @@ end;
 
 procedure TForm1.SpinEditMy_BuildKeyPress(Sender: TObject; var Key: Char);
 begin
-case Key of
-
-'0'..'9': ; // цифра
-
-#8 : ; // клавиша <Back Space>
-
-// остальные символы Ч запрещены
-
-else Key :=Chr(0); // символ не отображать
-
-end;
+  case Key of
+    '0'..'9': ; // цифра
+    #8 : ; // клавиша <Back Space>// остальные символы Ч запрещены
+  else
+    Key :=Chr(0); // символ не отображать
+  end;
 end;
 
 procedure TForm1.SpinEditPlatform_IDKeyPress(Sender: TObject; var Key: Char);
 begin
-case Key of
-
-'0'..'9': ; // цифра
-
-#8 : ; // клавиша <Back Space>
-
-// остальные символы Ч запрещены
-
-else Key :=Chr(0); // символ не отображать
-
+  case Key of
+    '0'..'9': ; // цифра
+    #8 : ; // клавиша <Back Space>// остальные символы Ч запрещены
+  else
+    Key :=Chr(0); // символ не отображать
+  end;
 end;
-end;
+
 
 end.
