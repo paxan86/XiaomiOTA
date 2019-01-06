@@ -1,11 +1,11 @@
-object Form1: TForm1
+﻿object Form1: TForm1
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'XiaomiOTA by PaXaN86 v3.8'
-  ClientHeight = 312
-  ClientWidth = 464
+  Caption = 'XiaomiOTA by PaXaN86 v4.0 Happy New Year!'
+  ClientHeight = 274
+  ClientWidth = 508
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -3180,250 +3180,349 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
+  object Image1: TImage
+    Left = 208
+    Top = 128
+    Width = 105
+    Height = 105
+    Picture.Data = {
+      0954506E67496D61676589504E470D0A1A0A0000000D49484452000000100000
+      001008060000001FF3FF610000000473424954080808087C0864880000000970
+      485973000000FD000000FD01E27B83930000001974455874536F667477617265
+      007777772E696E6B73636170652E6F72679BEE3C1A0000011E4944415478DA63
+      6440002620E667C00EFE01F1476C128C3086A52243EDB450861A362686FFE88A
+      BEFD6363EEDBF76BD7F2330C3E40EE7FAC06B8AA3374EECA6228C36ABF823BC3
+      CF9FBF1952BBF71D5E7C9AC101EA22520CF06460D04B67F8716A224372D7FEA3
+      CBCE32D8C10C21CE00296B0606D560A0963F0C1F4F4E63706C7E907FFE19C324
+      E20D40036ED318BA76DF6428A7A10162C60C0CAC1CC0887B04E4FC6160E05364
+      60F87007181DAF8834804F9E81413B9181E1F909A00A60F2E0916260E0946060
+      38D542A40112660C0C6C3CC018074AB3B00303D18A81E1D5790686DB6B893440
+      3F1BE8DC970C0C3F8189EFDF2F88822707E91988036280912C4355B73F431D3B
+      0B229D63033FFF3030956F64683AF398A10DC500720100D6B186116B9B2D4E00
+      00000049454E44AE426082}
+  end
   object ListBoxLINKS: TListBox
-    Left = 137
+    Left = 171
     Top = 3
     Width = 328
     Height = 246
+    Style = lbOwnerDrawFixed
+    ExtendedSelect = False
     ItemHeight = 13
     TabOrder = 0
     OnDblClick = ListBoxLINKSDblClick
+    OnDrawItem = ListBoxLINKSDrawItem
     OnMouseDown = ListBoxLINKSMouseDown
   end
   object Memo1: TMemo
-    Left = 479
-    Top = 5
+    Left = 505
+    Top = 1
     Width = 266
-    Height = 299
+    Height = 274
     ScrollBars = ssBoth
     TabOrder = 1
     WordWrap = False
   end
   object Panel1: TPanel
-    Left = 0
-    Top = 291
-    Width = 467
+    Left = 4
+    Top = 251
+    Width = 440
     Height = 21
-    AutoSize = True
     BevelInner = bvLowered
     TabOrder = 2
     object LabelStatus: TLabel
       Left = 2
-      Top = 6
-      Width = 463
+      Top = 5
+      Width = 139
       Height = 13
       Caption = #1057#1086#1089#1090#1086#1103#1085#1080#1077': '#1043#1086#1090#1086#1074' '#1082' '#1088#1072#1073#1086#1090#1077
       OnClick = LabelStatusClick
     end
-    object ProgressBar1: TProgressBar
-      Left = 315
-      Top = 2
-      Width = 149
-      Height = 17
-      Step = 1
-      TabOrder = 0
-    end
-  end
-  object Panel2: TPanel
-    Left = 0
-    Top = 3
-    Width = 137
-    Height = 247
-    BevelInner = bvSpace
-    BevelKind = bkSoft
-    BevelOuter = bvLowered
-    TabOrder = 3
-    object LabelMy_Build: TLabel
-      Left = 8
-      Top = 3
-      Width = 39
+    object LSVGauge14: TLSVGauge
+      Left = 254
+      Top = 4
+      Width = 186
       Height = 13
-      Caption = 'My Build'
-    end
-    object LabelDevice: TLabel
-      Left = 8
-      Top = 111
-      Width = 32
-      Height = 13
-      Caption = 'Device'
-    end
-    object LabelPlatform_ID: TLabel
-      Left = 8
-      Top = 57
-      Width = 54
-      Height = 13
-      Caption = 'Platform ID'
-    end
-    object ComboBoxDevice: TComboBox
-      Left = 8
-      Top = 133
-      Width = 121
-      Height = 21
-      TabOrder = 0
-      Text = 'xmen'
-      Items.Strings = (
-        'augustrush'
-        'braveheart'
-        'casablanca'
-        'dredd_hk'
-        'dredd'
-        'entrapment_hk'
-        'entrapment'
-        'forrestgump_hk'
-        'forrestgump'
-        'headon'
-        'hancock'
-        'gladiator_hk'
-        'gladiator'
-        'inception'
-        'jurassicpark'
-        'kungfupanda'
-        'leon'
-        'missionimpossible'
-        'pulpfiction'
-        'nationaltreasure'
-        'queenchristina'
-        'rainman'
-        'sevenpounds'
-        'matrix'
-        'zodiac'
-        'me2'
-        'magnolia'
-        'pacificrim'
-        'transformers'
-        'xmen'
-        'bennet'
-        'vforvendetta'
-        'dangal')
-    end
-    object ButtonFIND: TButton
-      Left = 30
-      Top = 208
-      Width = 75
-      Height = 21
-      Caption = #1055#1086#1080#1089#1082
-      TabOrder = 1
-      OnClick = ButtonFINDClick
-    end
-    object SpinEditPlatform_ID: TSpinEdit
-      Left = 8
-      Top = 79
-      Width = 64
-      Height = 22
-      MaxValue = 0
-      MinValue = 0
-      TabOrder = 2
-      Value = 634
-      OnKeyPress = SpinEditPlatform_IDKeyPress
-    end
-    object SpinEditMy_Build: TSpinEdit
-      Left = 8
-      Top = 25
-      Width = 64
-      Height = 22
-      MaxValue = 0
-      MinValue = 0
-      TabOrder = 3
-      Value = 936
-      OnKeyPress = SpinEditMy_BuildKeyPress
-    end
-    object LabelEditRange: TLabeledEdit
-      Left = 8
-      Top = 181
-      Width = 64
-      Height = 21
-      EditLabel.Width = 49
-      EditLabel.Height = 13
-      EditLabel.Caption = #1044#1080#1072#1087#1072#1079#1086#1085
-      TabOrder = 4
-      Text = '200'
-      OnKeyPress = LabelEditRangeKeyPress
-    end
-  end
-  object Panel3: TPanel
-    Left = 0
-    Top = 250
-    Width = 465
-    Height = 41
-    TabOrder = 4
-    object LabelEditTO_Obr: TLabeledEdit
-      Left = 8
-      Top = 16
-      Width = 41
-      Height = 21
-      EditLabel.Width = 11
-      EditLabel.Height = 13
-      EditLabel.Caption = #1057':'
-      TabOrder = 0
-      OnKeyPress = LabelEditTO_ObrKeyPress
-    end
-    object LabelEditDO_Obr: TLabeledEdit
-      Left = 55
-      Top = 16
-      Width = 43
-      Height = 21
-      EditLabel.Width = 19
-      EditLabel.Height = 13
-      EditLabel.Caption = #1055#1054':'
-      TabOrder = 1
-      OnKeyPress = LabelEditDO_ObrKeyPress
-    end
-    object LabelEditMyBuild_Obr: TLabeledEdit
-      Left = 105
-      Top = 16
-      Width = 48
-      Height = 21
-      EditLabel.Width = 76
-      EditLabel.Height = 13
-      EditLabel.Caption = #1048#1089#1082#1086#1084#1099#1081' '#1073#1080#1083#1076':'
-      TabOrder = 2
-      OnKeyPress = LabelEditMyBuild_ObrKeyPress
-    end
-    object ButtonObrSearch: TButton
-      Left = 181
-      Top = 13
-      Width = 97
-      Height = 25
-      Caption = #1054#1073#1088#1072#1090#1085#1099#1081' '#1087#1086#1080#1089#1082
-      TabOrder = 3
-      OnClick = ButtonObrSearchClick
-    end
-    object ButtonSearchFULLOTA: TButton
-      Left = 284
-      Top = 13
-      Width = 97
-      Height = 25
-      Caption = #1055#1086#1080#1089#1082' '#1074#1089#1077#1093' OTA'
-      TabOrder = 4
-      OnClick = ButtonSearchFULLOTAClick
-    end
-    object ButtonClear: TButton
-      Left = 387
-      Top = 13
-      Width = 38
-      Height = 25
-      Caption = #1057#1073#1088#1086#1089
-      TabOrder = 5
-      OnClick = ButtonClearClick
-    end
-    object Button2: TButton
-      Left = 434
-      Top = 13
-      Width = 18
-      Height = 25
-      Caption = '>>'
-      TabOrder = 6
-      OnClick = Button2Click
+      BorderStyle = bsNone
+      ForeColor = clNavy
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      Font.ColorOnFilled = clWhite
+      Font.ColorOnBackground = clBlack
+      Font.FixTextColor = True
+      Frame3D = False
+      Progress = 0
+      Text = '%d%%'
+      TextureOnFore.Data = {
+        86010000424D86010000000000003600000028000000080000000E0000000100
+        18000000000050010000120B0000120B00000000000000000000FF0000FF0000
+        FF0000FF0000FF0000FF0000FF0000FF0000FF000090E88F90E88F90E78E90E7
+        8E90E78E90E78EFF0000FF000077E27678E27677E27577E27577E27577E276FF
+        0000FF00005DDD5B5EDD5B5DDD5B5DDD5B5DDD5B5EDD5BFF0000FF000044D741
+        44D74144D74145D74244D74145D742FF0000FF000031D32E31D32E31D32E31D3
+        2E31D32E32D32FFF0000FF00002CD2292BD2282BD2282BD2282CD2292BD228FF
+        0000FF00002CD2292BD2282BD2282BD2282CD2292BD228FF0000FF000038D535
+        38D53538D53538D53538D53537D535FF0000FF000050DA4D50DA4E50DA4E50DA
+        4E50DA4E50DA4DFF0000FF000068DF6668DF6668DF6668DF6668DF6668DF66FF
+        0000FF00007EE47C7EE47C7DE37B7EE47C7EE47C7EE47CFF0000FF000096E995
+        96E99595E99496E99596E99596E995FF0000FF0000ACEDABACEDABACEDABACED
+        ABACEDABACEDABFF0000}
+      TransparentFore = True
+      TransparentBack = False
+      ForeAsBlocks = True
+      ForeBlockSize = 0
+      TextInCenterFore = True
+      Pie3DHeight = 20
+      Pie3DColor = clBlack
+      Edge = 0
+      RunningStrip = False
+      RuningStep = 0
     end
   end
   object Button1: TButton
-    Left = 458
-    Top = 255
+    Left = 546
+    Top = 335
     Width = 75
     Height = 25
     Caption = 'PPL'
-    TabOrder = 5
+    TabOrder = 3
     Visible = False
     OnClick = Button1Click
+  end
+  object PageControl1: TPageControl
+    Left = 0
+    Top = 1
+    Width = 169
+    Height = 248
+    ActivePage = Main
+    TabOrder = 4
+    object Main: TTabSheet
+      Caption = #1055#1088#1103#1084#1086#1081
+      object LabelDevice: TLabel
+        Left = 3
+        Top = 97
+        Width = 32
+        Height = 13
+        Caption = 'Device'
+      end
+      object LabelMy_Build: TLabel
+        Left = 3
+        Top = 3
+        Width = 39
+        Height = 13
+        Caption = 'My Build'
+      end
+      object LabelPlatform_ID: TLabel
+        Left = 3
+        Top = 50
+        Width = 54
+        Height = 13
+        Caption = 'Platform ID'
+      end
+      object ButtonFIND: TButton
+        Left = 45
+        Top = 194
+        Width = 75
+        Height = 21
+        Caption = #1055#1086#1080#1089#1082
+        TabOrder = 0
+        OnClick = ButtonFINDClick
+      end
+      object ComboBoxDevice: TComboBox
+        Left = 3
+        Top = 116
+        Width = 121
+        Height = 21
+        ItemIndex = 0
+        TabOrder = 1
+        Text = 'augustrush'
+        Items.Strings = (
+          'augustrush'
+          'braveheart'
+          'casablanca'
+          'dredd_hk'
+          'dredd'
+          'entrapment_hk'
+          'entrapment'
+          'forrestgump_hk'
+          'forrestgump'
+          'headon'
+          'hancock'
+          'gladiator_hk'
+          'gladiator'
+          'inception'
+          'jurassicpark'
+          'kungfupanda'
+          'leon'
+          'missionimpossible'
+          'pulpfiction'
+          'nationaltreasure'
+          'queenchristina'
+          'rainman'
+          'sevenpounds'
+          'matrix'
+          'zodiac'
+          'me2'
+          'magnolia'
+          'pacificrim'
+          'transformers'
+          'xmen'
+          'bennet'
+          'vforvendetta'
+          'dangal')
+      end
+      object LabelEditRange: TLabeledEdit
+        Left = 3
+        Top = 159
+        Width = 64
+        Height = 21
+        EditLabel.Width = 49
+        EditLabel.Height = 13
+        EditLabel.Caption = #1044#1080#1072#1087#1072#1079#1086#1085
+        TabOrder = 2
+        Text = '200'
+        OnKeyPress = LabelEditRangeKeyPress
+      end
+      object SpinEditMy_Build: TSpinEdit
+        Left = 3
+        Top = 22
+        Width = 64
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 3
+        Value = 936
+        OnKeyPress = SpinEditMy_BuildKeyPress
+      end
+      object SpinEditPlatform_ID: TSpinEdit
+        Left = 3
+        Top = 69
+        Width = 64
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 4
+        Value = 634
+        OnKeyPress = SpinEditPlatform_IDKeyPress
+      end
+    end
+    object Обратный: TTabSheet
+      Caption = #1054#1073#1088#1072#1090#1085#1099#1081
+      ImageIndex = 1
+      object ButtonObrSearch: TButton
+        Left = 35
+        Top = 194
+        Width = 97
+        Height = 25
+        Caption = #1054#1073#1088#1072#1090#1085#1099#1081' '#1087#1086#1080#1089#1082
+        TabOrder = 0
+        OnClick = ButtonObrSearchClick
+      end
+      object LabelEditMyBuild_Obr: TLabeledEdit
+        Left = 8
+        Top = 116
+        Width = 48
+        Height = 21
+        EditLabel.Width = 76
+        EditLabel.Height = 13
+        EditLabel.Caption = #1048#1089#1082#1086#1084#1099#1081' '#1073#1080#1083#1076':'
+        TabOrder = 1
+        Text = '666'
+        OnKeyPress = LabelEditMyBuild_ObrKeyPress
+      end
+      object LabelEditDO_Obr: TLabeledEdit
+        Left = 8
+        Top = 69
+        Width = 43
+        Height = 21
+        EditLabel.Width = 19
+        EditLabel.Height = 13
+        EditLabel.Caption = #1055#1054':'
+        TabOrder = 2
+        Text = '500'
+        OnKeyPress = LabelEditDO_ObrKeyPress
+      end
+      object LabelEditTO_Obr: TLabeledEdit
+        Left = 8
+        Top = 22
+        Width = 41
+        Height = 21
+        EditLabel.Width = 11
+        EditLabel.Height = 13
+        EditLabel.Caption = #1057':'
+        TabOrder = 3
+        Text = '1'
+        OnKeyPress = LabelEditTO_ObrKeyPress
+      end
+    end
+    object ВсеOTA: TTabSheet
+      Caption = #1042#1089#1077' OTA'
+      ImageIndex = 2
+      object LabelTO_ALL: TLabel
+        Left = 3
+        Top = 3
+        Width = 11
+        Height = 13
+        Caption = #1057':'
+      end
+      object LabelDO_ALL: TLabel
+        Left = 3
+        Top = 50
+        Width = 19
+        Height = 13
+        Caption = #1055#1054':'
+      end
+      object ButtonSearchFULLOTA: TButton
+        Left = 35
+        Top = 194
+        Width = 97
+        Height = 25
+        Caption = #1055#1086#1080#1089#1082' '#1074#1089#1077#1093' OTA'
+        TabOrder = 0
+        OnClick = ButtonSearchFULLOTAClick
+      end
+      object SpinEditTO_ALL: TSpinEdit
+        Left = 3
+        Top = 22
+        Width = 64
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 1
+        Value = 1
+      end
+      object SpinEditDO_ALL: TSpinEdit
+        Tag = 500
+        Left = 3
+        Top = 69
+        Width = 64
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 2
+        Value = 2019
+      end
+    end
+  end
+  object Button2: TButton
+    Left = 481
+    Top = 250
+    Width = 18
+    Height = 22
+    Caption = '>>'
+    TabOrder = 5
+    OnClick = Button2Click
+  end
+  object ButtonClear: TButton
+    Left = 450
+    Top = 250
+    Width = 30
+    Height = 22
+    Caption = 'Clear'
+    TabOrder = 6
+    OnClick = ButtonClearClick
   end
 end

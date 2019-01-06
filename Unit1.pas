@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Samples.Spin,  Vcl.StdCtrls,
   Vcl.ComCtrls , inifiles, ShellApi, IdHTTP, unit2, System.Threading, System.SyncObjs,
-  System.Types, ClipBrd;
+  System.Types, ClipBrd, Vcl.Imaging.pngimage, cm_LSVGauges;
 //
   const
   const_MYMESSAGE = WM_USER + 100;
@@ -17,25 +17,32 @@ type
     Memo1: TMemo;
     Panel1: TPanel;
     LabelStatus: TLabel;
-    ProgressBar1: TProgressBar;
-    Panel2: TPanel;
-    LabelMy_Build: TLabel;
-    LabelDevice: TLabel;
-    LabelPlatform_ID: TLabel;
-    ComboBoxDevice: TComboBox;
-    ButtonFIND: TButton;
-    SpinEditPlatform_ID: TSpinEdit;
-    SpinEditMy_Build: TSpinEdit;
-    LabelEditRange: TLabeledEdit;
-    Panel3: TPanel;
-    LabelEditTO_Obr: TLabeledEdit;
-    LabelEditDO_Obr: TLabeledEdit;
-    LabelEditMyBuild_Obr: TLabeledEdit;
-    ButtonObrSearch: TButton;
-    ButtonSearchFULLOTA: TButton;
-    ButtonClear: TButton;
-    Button2: TButton;
     Button1: TButton;
+    Image1: TImage;
+    LSVGauge14: TLSVGauge;
+    PageControl1: TPageControl;
+    Main: TTabSheet;
+    Обратный: TTabSheet;
+    ВсеOTA: TTabSheet;
+    ButtonFIND: TButton;
+    ComboBoxDevice: TComboBox;
+    LabelDevice: TLabel;
+    LabelEditRange: TLabeledEdit;
+    LabelMy_Build: TLabel;
+    LabelPlatform_ID: TLabel;
+    SpinEditMy_Build: TSpinEdit;
+    SpinEditPlatform_ID: TSpinEdit;
+    ButtonObrSearch: TButton;
+    LabelEditMyBuild_Obr: TLabeledEdit;
+    LabelEditDO_Obr: TLabeledEdit;
+    LabelEditTO_Obr: TLabeledEdit;
+    ButtonSearchFULLOTA: TButton;
+    Button2: TButton;
+    ButtonClear: TButton;
+    SpinEditTO_ALL: TSpinEdit;
+    SpinEditDO_ALL: TSpinEdit;
+    LabelTO_ALL: TLabel;
+    LabelDO_ALL: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ThreadTerminate(Sender: TObject);
@@ -56,20 +63,23 @@ type
     procedure LabelStatusClick(Sender: TObject);
     procedure ButtonClearClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure ListBoxLINKSDrawItem(Control: TWinControl; Index: Integer;
+      Rect: TRect; State: TOwnerDrawState);
   private
     { Private declarations }
   protected
     procedure MyMessage(var Msg: TMessage); message const_MYMESSAGE;
   public
     { Public declarations }
+    Procedure PaintImage(List1 :TListBox; Control: TWinControl; Index: Integer; Rect: TRect);
   end;
 
 var
   Form1: TForm1;
-   MaxCountThread , CountThread, Mode : Byte;
- pathINI, Version_Android : string;
- IniFile : TIniFile;
- ClipBoard1 :TClipboard;
+  MaxCountThread , CountThread, Mode : Byte;
+  pathINI, Version_Android : string;
+  IniFile : TIniFile;
+  ClipBoard1 :TClipboard;
 
 implementation
 
@@ -81,6 +91,8 @@ procedure qSort(var A: Array of Integer; min, max: Integer);
 var i, j, supp, tmp : Integer;
 tmp2, tmp3 : string;
 begin
+form1.ListBoxLINKS.Items.BeginUpdate;
+form1.Memo1.Lines.BeginUpdate;
 supp:=A[max-((max-min) div 2)];
 //supp2 :=  form1.ListBoxLINKS.Items[max-((max-min) div 2)];
 i:=min; j:=max;
@@ -105,6 +117,8 @@ while i<j do
   end;
 if min<j then qSort(A, min, j);
 if i<max then qSort(A, i, max);
+form1.ListBoxLINKS.Items.EndUpdate;
+form1.Memo1.Lines.EndUpdate;
 end;
 
 
@@ -144,7 +158,7 @@ var
   t: array of integer;
 begin
  Inc(countThread);
- ProgressBar1.Position := CountThread;
+ Form1.LSVGauge14.Progress:=CountThread;
  if CountThread = MaxCountThread then
  begin
    form1.ButtonFIND.Enabled := True;
@@ -163,7 +177,7 @@ begin
    if (Mode = 1) or (Mode = 2) then
        for h := 0 to ListBoxLINKS.Items.Count - 1 do
          begin
-            StrF := '6.0.1.';
+            StrF := Version_Android;
             n1 := SearchString(StrF, ListBoxLINKS.Items[h], 2) + 6;
             StrF := '.zip';
             n2 := SearchString(StrF, ListBoxLINKS.Items[h], 1);
@@ -174,7 +188,7 @@ begin
    if Mode = 3 then
      for h := 0 to ListBoxLINKS.Items.Count - 1 do
          begin
-            StrF := '6.0.1.';
+            StrF := Version_Android;
             n1 := SearchString(StrF, ListBoxLINKS.Items[h], 1) + 6;
             StrF := ' ';
             n2 := SearchString(StrF, ListBoxLINKS.Items[h], 1);
@@ -219,7 +233,9 @@ procedure TForm1.ButtonObrSearchClick(Sender: TObject);
   My_build_threadOUT : string;
   IdHTTP: TIdHTTP;
 begin
-form1.ProgressBar1.Position := 0;
+memo1.Clear;
+ListBoxLINKS.Clear;
+LSVGauge14.progress:= 1;
 if (length(LabelEditTO_Obr.Text)=0) or (length(LabelEditDO_Obr.text)=0)  or (length(LabelEditMyBuild_Obr.text)=0) then
 begin
   ShowMessage('Введены не все данные!');
@@ -232,7 +248,7 @@ end;
   //memo1.Clear;
   //ListBoxLINKS.Clear;
   MaxCountThread := 20;   //максимальное число потоков      20
-  ProgressBar1.max := MaxCountThread;
+  LSVGauge14.MaxValue:= MaxCountThread;
   SetLength(Threads, MaxCountThread);
   st:=0;
   en:=Round((StrToInt(LabelEditDO_Obr.Text) - StrToInt(LabelEditTO_Obr.Text)) / MaxCountThread);  //920 -900 1
@@ -241,7 +257,7 @@ end;
     en := StrToInt(LabelEditDO_Obr.Text) - StrToInt(LabelEditTO_Obr.Text);
     MaxCountThread := 1;
     SetLength(Threads, MaxCountThread);
-    ProgressBar1.max := MaxCountThread;
+    LSVGauge14.MaxValue:= MaxCountThread;
   end;
  // if (StrToInt(LabelEditDO_Obr.Text) - StrToInt(LabelEditTO_Obr.Text)) < MaxCountThread * 2 then
  // begin
@@ -297,12 +313,12 @@ const a : BOOL = false;
 begin
 if a = false then
 begin
-  Form1.Width := 760;
+  Form1.Width := 785;
   a := true;
 end
 else
 begin
-  Form1.Width := 473;
+  Form1.Width := 514;
   a := false;
 end;
 end;
@@ -314,10 +330,10 @@ begin
 //LabelEditRange.text := '';
 memo1.Clear;
 ListBoxLINKS.Clear;
-LabelStatus.Caption := 'Состояние: Готов к работе!';
-ButtonFIND.Enabled := True;
-ButtonObrSearch.Enabled := True;
-ButtonSearchFULLOTA.Enabled := True;
+//LabelStatus.Caption := 'Состояние: Готов к работе!';
+//ButtonFIND.Enabled := True;
+//ButtonObrSearch.Enabled := True;
+//ButtonSearchFULLOTA.Enabled := True;
 end;
 
 procedure TForm1.ButtonFINDClick(Sender: TObject);
@@ -328,13 +344,12 @@ procedure TForm1.ButtonFINDClick(Sender: TObject);
   My_build_threadOUT: string;
   IdHTTP: TIdHTTP;
 begin
-form1.ProgressBar1.Position := 0;
+form1.LSVGauge14.Progress := 1;
 if (length(SpinEditMy_Build.Text)=0) or (length(SpinEditPlatform_ID.text)=0)  or (length(LabelEditRange.text)=0) then
 begin
   ShowMessage('Введены не все данные!');
   Exit;
 end;
-
   IdHTTP := TIdHTTP.Create;
   form1.ButtonFIND.Enabled := false;
   form1.ButtonObrSearch.Enabled := false;
@@ -342,7 +357,7 @@ end;
   memo1.Clear;
   ListBoxLINKS.Clear;
   MaxCountThread := 20;   //максимальное число потоков      20
-  ProgressBar1.max := MaxCountThread;
+  LSVGauge14.MaxValue:= MaxCountThread;
   SetLength(Threads, MaxCountThread);
   st:=0;
   en:=Round(StrToInt(LabelEditRange.Text) / MaxCountThread);
@@ -351,7 +366,7 @@ end;
     en := StrToInt(LabelEditRange.Text);
     MaxCountThread := 1;
     SetLength(Threads, MaxCountThread);
-    ProgressBar1.max := MaxCountThread;
+    LSVGauge14.MaxValue:= MaxCountThread;
   end;
   en2:=1 * en;
   My_build_threadOUT := SpinEditMy_Build.Text;
@@ -393,6 +408,73 @@ end;
   end;
 end;
 
+
+procedure ClickCluck(ParamTo, ParamDO, Mode : Integer);
+ var
+  Threads: array of TMyThread;
+  i: Byte;
+  st, en, en2 : integer;
+  My_build_threadOUT: string;
+  IdHTTP: TIdHTTP;
+begin
+  form1.LSVGauge14.Progress := 1;
+  IdHTTP := TIdHTTP.Create;
+  form1.ButtonFIND.Enabled := false;
+  form1.ButtonObrSearch.Enabled := false;
+  form1.ButtonSearchFULLOTA.Enabled := false;
+  Form1.memo1.Clear;
+  Form1.ListBoxLINKS.Clear;
+  MaxCountThread := 20;   //максимальное число потоков      20
+  form1.LSVGauge14.MaxValue:= MaxCountThread;
+  SetLength(Threads, MaxCountThread);
+  st:=0;
+  en:=Round(StrToInt(Form1.LabelEditRange.Text) / MaxCountThread);
+  if en = 0 then
+  begin
+    en := StrToInt(form1.LabelEditRange.Text);
+    MaxCountThread := 1;
+    SetLength(Threads, MaxCountThread);
+    form1.LSVGauge14.MaxValue:= MaxCountThread;
+  end;
+  en2:=1 * en;
+  My_build_threadOUT := form1.SpinEditMy_Build.Text;
+  try
+    IdHTTP.Head('http://ya.ru');
+  except
+    on pe: EIdHTTPProtocolException do
+    begin
+        if (pe.ErrorCode <> 302) or (pe.ErrorCode = 404) then   /////////////////не работает
+        begin
+          form1.LabelStatus.Caption:= 'Состояние: Ошибка сети';
+          exit;
+        end;
+    end;
+      on e: Exception do
+  end;
+  Version_Android:='6.0.1.';
+
+  if Form1.ComboBoxDevice.ItemIndex = 10 then
+  Version_Android:='4.4.4.';
+
+  if Form1.ComboBoxDevice.ItemIndex = 15 then
+  Version_Android:='5.1.';
+
+  for i := 0 to MaxCountThread - 1 do
+  begin
+    Threads[i] := TMyThread.Create(True);
+    Threads[i].StartIterationOUT:=st;
+    Threads[i].EndIterationOUT:=en2;
+    Threads[i].M_OUT :=  Mode;
+    Threads[i].My_build_threadOUT := My_build_threadOUT;
+    Threads[i].priority := tpnormal;
+    st:= en2 + 1 ;
+    en2:=en2 + en;
+    Threads[i].OnTerminate := form1.ThreadTerminate;
+    form1.LabelStatus.Caption:= 'Состояние: ПОИСК!';
+    Threads[i].Start;
+  end;
+end;
+
 procedure TForm1.ButtonSearchFULLOTAClick(Sender: TObject);
  var
   Threads: array of TMyThread;
@@ -403,8 +485,8 @@ procedure TForm1.ButtonSearchFULLOTAClick(Sender: TObject);
 begin
 memo1.Clear;
 ListBoxLINKS.Clear;
-form1.ProgressBar1.Position := 0;
-if (length(LabelEditTO_Obr.Text)=0) or (length(LabelEditDO_Obr.text)=0)  then
+LSVGauge14.Progress:= 1;
+if (length(SpinEditTO_ALL.Text)=0) or (length(SpinEditDO_ALL.text)=0)  then
 begin
   ShowMessage('Введены не все данные!');
   Exit;
@@ -415,17 +497,17 @@ end;
   form1.ButtonObrSearch.Enabled := false;
   form1.ButtonFIND.Enabled := false;
   MaxCountThread := 20;   //максимальное число потоков      20
-  ProgressBar1.max := MaxCountThread;
+  LSVGauge14.MaxValue:= MaxCountThread;
   SetLength(Threads, MaxCountThread);
   //st:=0;
-  st:=StrToInt(LabelEditTO_Obr.Text);
-  en:=Round((StrToInt(LabelEditDO_Obr.Text) - StrToInt(LabelEditTO_Obr.Text)) / MaxCountThread);  //920 -900 1
+  st:=StrToInt(SpinEditTO_ALL.Text);
+  en:=Round((StrToInt(SpinEditDO_ALL.Text) - StrToInt(SpinEditTO_ALL.Text)) / MaxCountThread);  //920 -900 1
   if en = 0 then
   begin
-    en := StrToInt(LabelEditDO_Obr.Text) - StrToInt(LabelEditTO_Obr.Text);
+    en := StrToInt(SpinEditDO_ALL.Text) - StrToInt(SpinEditTO_ALL.Text);
     MaxCountThread := 1;
     SetLength(Threads, MaxCountThread);
-    ProgressBar1.max := MaxCountThread;
+    LSVGauge14.MaxValue:= MaxCountThread;
   end;
   en2:=st + en;       //1
   My_build_threadOUT := LabelEditMyBuild_Obr.Text;
@@ -469,6 +551,9 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+Form1.ListBoxLINKS.ItemHeight:=Form1.ListBoxLINKS.ItemHeight +5;
+//SendMessage(ProgressBar1.Handle, PBM_SETBARCOLOR, 0, clGreen); //цвет делений
+  ListBoxLINKS.DoubleBuffered := True;
   CountThread := 0;
   pathINI:=extractfilepath(application.ExeName)+'\SET.ini';
   if FileExists(pathINI) then //проверяем есть ли файл INI
@@ -590,6 +675,29 @@ procedure TForm1.ListBoxLINKSDblClick(Sender: TObject);
 begin
 ShellExecute( Handle, 'open', PChar(Memo1.Lines[ListBoxLINKS.ItemIndex]), nil, nil, SW_NORMAL );
 end;
+
+Procedure TForm1.PaintImage(List1 :TListBox; Control: TWinControl;
+ Index: Integer; Rect: TRect);
+const W = 16;
+      H = 16;
+var BMPRect: TRect;
+begin
+  with (Control as TListBox).Canvas do
+  begin
+    FillRect(Rect);
+    List1.Canvas.Draw(0, Rect.Top, Image1.Picture.Graphic);
+    BMPRect := Bounds(Rect.Left, Rect.Top, W, H);
+    TextOut(Rect.Left+W, Rect.Top, List1.Items[index]);
+  end;
+end;
+
+procedure TForm1.ListBoxLINKSDrawItem(Control: TWinControl; Index: Integer;
+  Rect: TRect; State: TOwnerDrawState);
+begin
+PaintImage(ListBoxLINKS, Control, Index, Rect);
+end;
+
+
 
 procedure TForm1.ListBoxLINKSMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);

@@ -12,7 +12,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  TStyleManager.TrySetStyle('Windows10 Green');
+  TStyleManager.TrySetStyle('Smokey Quartz Kamri');
   Application.CreateForm(TForm1, Form1);
   Application.Run;
   {$SetPEFlags IMAGE_FILE_RELOCS_STRIPPED}

@@ -54,7 +54,7 @@
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
         <SanitizedProjectName>Xiaomi_OTA</SanitizedProjectName>
-        <Custom_Styles>&quot;Windows10 Green|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Windows10Green.vsf&quot;</Custom_Styles>
+        <Custom_Styles>&quot;Smokey Quartz Kamri|VCLSTYLE|$(BDSCOMMONDIR)\Styles\SmokeyQuartzKamri.vsf&quot;</Custom_Styles>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;bindcompdbx;DBXDb2Driver;DBXInterBaseDriver;vcl;DBXSybaseASEDriver;vclactnband;IndyIPServer;IndyIPCommon;IndySystem;fmxase;tethering;svnui;dsnapcon;DBXMSSQLDriver;vclimg;DatasnapConnectorsFreePascal;TeeDB;vcltouch;emshosting;vcldb;bindcompfmx;Intraweb;svn;DBXOracleDriver;ibmonitor;inetdb;DBXOdbcDriver;FMXTee;DbxCommonDriver;FmxTeeUI;emsedge;ibxpress;fmx;Tee;DataSnapServer;xmlrtl;DataSnapNativeClient;ibxbindings;vclib;vclwinx;rtl;fmxobj;DbxClientDriver;fmxdae;DBXSybaseASADriver;CustomIPTransport;dbexpress;vcldsnap;IndyCore;vclx;bindcomp;appanalytics;DataSnapCommon;DBXInformixDriver;dsnap;IndyIPClient;bindcompvcl;DataSnapConnectors;TeeUI;VCLRESTComponents;dbxcds;VclSmp;adortl;DataSnapIndy10ServerTransport;vclie;bindengine;DBXMySQLDriver;DataSnapProviderClient;dsnapxml;DBXFirebirdDriver;dbrtl;IndyProtocols;inetdbxpress;DataSnapClient;DataSnapServerMidas;$(DCC_UsePackage)</DCC_UsePackage>
@@ -97,13 +97,12 @@
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_MajorVer>3</VerInfo_MajorVer>
+        <VerInfo_MajorVer>4</VerInfo_MajorVer>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=3.8.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=4.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <Icon_MainIcon>SDIAPP_Icon.ico</Icon_MainIcon>
         <UWP_DelphiLogo44>..\123\SDIAPP_Icon.ico</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>..\123\SDIAPP_Icon.ico</UWP_DelphiLogo150>
-        <VerInfo_MinorVer>8</VerInfo_MinorVer>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
